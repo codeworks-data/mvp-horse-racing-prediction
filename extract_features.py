@@ -17,9 +17,9 @@ def compute_owner_features(df, owner='jockey'):
   
     """ function to compute statistics of the jockey and the trainer """  
 
-    df_owner_runs = df_runners[['race_id', f'{owner}_id']].groupby(f'{owner}_id').size().reset_index(name=f'{owner}_runs')
-    df_owner_wins = df_runners[df_runners.won == 1][['race_id', f'{owner}_id']].groupby(f'{owner}_id').size().reset_index(name=f'{owner}_wins')
-    df_owner_places = df_runners[df_runners.place == 1][['race_id', f'{owner}_id']].groupby(f'{owner}_id').size().reset_index(name=f'{owner}_places')
+    df_owner_runs = df[['race_id', f'{owner}_id']].groupby(f'{owner}_id').size().reset_index(name=f'{owner}_runs')
+    df_owner_wins = df[df.won == 1][['race_id', f'{owner}_id']].groupby(f'{owner}_id').size().reset_index(name=f'{owner}_wins')
+    df_owner_places = df[df.place == 1][['race_id', f'{owner}_id']].groupby(f'{owner}_id').size().reset_index(name=f'{owner}_places')
 
     dfs = [df, df_owner_runs, df_owner_wins, df_owner_places]
     df = reduce(lambda  left,right: pd.merge(left,right,on=[f'{owner}_id'], how='left'), dfs)  
