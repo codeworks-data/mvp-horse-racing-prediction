@@ -10,4 +10,4 @@ class Config:
         self.won_label = "won"
         self.place_label = "place"
         self.model_file_name = "baseline_model.joblib"
-        self.year_test = 2004
+        self.date_test = '2005-01-01'

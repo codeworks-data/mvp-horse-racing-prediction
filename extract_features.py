@@ -1,4 +1,5 @@
 import os
+import numpy as np
 import pandas as pd
 from config import Config
 from functools import reduce
@@ -69,9 +70,9 @@ def compute_owner_feats(df, owner=None, group_col='venue'):
   
     """ function to compute statistics of the jockey and the trainer """  
 
-    df[f'{owner}_runs'] = df.sort_values('date').groupby(f'{owner}_id').cumcount()
-    df[f'{owner}_wins'] = df.sort_values('date').groupby(f'{owner}_id')['won'].cumsum().sub(df.won)
-    df[f'{owner}_places'] = df.sort_values('date').groupby(f'{owner}_id')['place'].cumsum().sub(df.place)
+    df[f'{owner}_runs'] = df.sort_values(['date', 'race_no']).groupby(f'{owner}_id').cumcount()
+    df[f'{owner}_wins'] = df.sort_values(['date', 'race_no']).groupby(f'{owner}_id')['won'].cumsum().sub(df.won)
+    df[f'{owner}_places'] = df.sort_values(['date', 'race_no']).groupby(f'{owner}_id')['place'].cumsum().sub(df.place)
     
     try:
         df[f'ratio_win_{owner}'] = df[f'{owner}_wins'] / df[f'{owner}_runs']
@@ -82,9 +83,9 @@ def compute_owner_feats(df, owner=None, group_col='venue'):
     
     if group_col:
         
-        df[f'{owner}_{group_col}_runs'] = df.sort_values('date').groupby([f'{owner}_id', group_col]).cumcount()
-        df[f'{owner}_{group_col}_wins'] = df.sort_values('date').groupby([f'{owner}_id', group_col])['won'].cumsum().sub(df.won)
-        df[f'{owner}_{group_col}_places'] = df.sort_values('date').groupby([f'{owner}_id', group_col])['place'].cumsum().sub(df.place)
+        df[f'{owner}_{group_col}_runs'] = df.sort_values(['date', 'race_no']).groupby([f'{owner}_id', group_col]).cumcount()
+        df[f'{owner}_{group_col}_wins'] = df.sort_values(['date', 'race_no']).groupby([f'{owner}_id', group_col])['won'].cumsum().sub(df.won)
+        df[f'{owner}_{group_col}_places'] = df.sort_values(['date', 'race_no']).groupby([f'{owner}_id', group_col])['place'].cumsum().sub(df.place)
         
         try:
             df[f'ratio_win_{owner}_{group_col}'] = df[f'{owner}_{group_col}_wins'] / df[f'{owner}_{group_col}_runs']
@@ -93,6 +94,61 @@ def compute_owner_feats(df, owner=None, group_col='venue'):
         except ZeroDivisionError:
             return 0    
         
+    return df
+
+
+
+def compute_std_ranking_to_1(df, col='result'):
+
+    df = df.sort_values(['date','race_no'])
+    df['rank1'] = df.groupby('horse_id')[f'{col}'].shift()
+    df['rank2'] = df.groupby('horse_id')[f'{col}'].shift(2)
+    df['rank3'] = df.groupby('horse_id')[f'{col}'].shift(3)
+    df['horse_std_rank'] = df.apply(lambda x: (  (  (x.rank1 - 1)**2 + (x.rank2 - 1)**2 + (x.rank3 - 1)**2    ) / 3) **(0.5)  ,axis=1).fillna(0)
+    df.drop(['rank1','rank2','rank3'],axis=1, inplace=True)
+    
+    return df
+
+
+
+def compute_combinaison_feats(df, owner_1, owner_2, hippo = None):
+    df = df.sort_values(['date','race_no'])
+    df[f'total_runs_{owner_1}_{owner_2}'] = df.sort_values(['date','race_no']).groupby([f'{owner_1}_id', f'{owner_2}_id']).cumcount()
+    df[f'total_wins_{owner_1}_{owner_2}'] = df.sort_values(['date','race_no']).groupby([f'{owner_1}_id', f'{owner_2}_id']).won.cumsum()
+    
+    df[f'ratio_win_{owner_1}_{owner_2}'] = (df[f'total_wins_{owner_1}_{owner_2}'] / df[f'total_runs_{owner_1}_{owner_2}'] ).fillna(0)
+    
+    df[f'total_place_{owner_1}_{owner_2}'] = df.sort_values(['date','race_no']).groupby([f'{owner_1}_id', f'{owner_2}_id']).place.cumsum()
+    df[f'ratio_place_{owner_1}_{owner_2}'] = (df[f'total_place_{owner_1}_{owner_2}'] / df[f'total_runs_{owner_1}_{owner_2}'] ).fillna(0)
+    df[f'ratio_place_{owner_1}_{owner_2}'].loc[(~np.isfinite(df[f'ratio_place_{owner_1}_{owner_2}'])) & df[f'ratio_place_{owner_1}_{owner_2}'].notnull()] = np.nan
+    df[f'ratio_place_{owner_1}_{owner_2}'] = df[f'ratio_place_{owner_1}_{owner_2}'].fillna(0)
+    df[f'first_second_{owner_2}'] = (df[f'total_runs_{owner_1}_{owner_2}'] <= 1).astype(int)
+    df[f'same_last_{owner_2}'] = (df.groupby([f'{owner_1}_id'])[f'{owner_2}_id'].shift() == df[f'{owner_2}_id']).astype(int)
+    
+    if hippo:
+        df[f'total_runs_{owner_1}_{owner_2}_{hippo}'] = df.sort_values(['date','race_no']).groupby([f'{owner_1}_id', f'{owner_2}_id', f'{hippo}']).cumcount()
+        df[f'total_wins_{owner_1}_{owner_2}_{hippo}'] = df.sort_values(['date','race_no']).groupby([f'{owner_1}_id', f'{owner_2}_id', f'{hippo}']).won.cumsum()
+        df[f'ratio_win_{owner_1}_{owner_2}_{hippo}'] = (df[f'total_wins_{owner_1}_{owner_2}_{hippo}'] / df[f'total_runs_{owner_1}_{owner_2}_{hippo}'] ).fillna(0)
+        df[f'total_place_{owner_1}_{owner_2}_{hippo}'] = df.sort_values(['date','race_no']).groupby([f'{owner_1}_id', f'{owner_2}_id', f'{hippo}']).place.cumsum()
+        df[f'ratio_place_{owner_1}_{owner_2}_{hippo}'] = (df[f'total_place_{owner_1}_{owner_2}_{hippo}'] / df[f'total_runs_{owner_1}_{owner_2}_{hippo}'] ).fillna(0)
+        df[f'ratio_place_{owner_1}_{owner_2}_{hippo}'].loc[(~np.isfinite(df[f'ratio_place_{owner_1}_{owner_2}'])) 
+                                                           & df[f'ratio_place_{owner_1}_{owner_2}_{hippo}'].notnull()] = np.nan
+        df[f'ratio_place_{owner_1}_{owner_2}_{hippo}'] = df[f'ratio_place_{owner_1}_{owner_2}_{hippo}'].fillna(0) 
+    
+    return df
+
+
+def compute_owner_gain_feats(df, owner=None):
+  
+    """ function to compute gain features of the jockey and the trainer """  
+    
+    df = df.sort_values(['date','race_no']) 
+    df['gain_for_this_race'] = df['won']*df['prize'].fillna(0)
+    df[f'gain_{owner}_cumul'] = df.groupby(f'{owner}_id').gain_for_this_race.cumsum().sub(df.gain_for_this_race)
+    df[f'avg_prize_wins_{owner}'] = (df[f'gain_{owner}_cumul']/df[f'{owner}_wins']).fillna(0) #on prends en compte le décalage pour avoir une valeur d'avant course
+    df[f'avg_prize_runs_{owner}'] = (df[f'gain_{owner}_cumul']/df[f'{owner}_runs']).fillna(0) #on prends en compte le décalage pour avoir une valeur d'avant course
+    df.drop('gain_for_this_race',axis=1,inplace=True)
+    
     return df
 
 
@@ -116,8 +172,16 @@ if __name__ == "__main__":
     df_runners = compute_horse_feats(df_runners, group_col='surface')
     df_runners = compute_horse_feats(df_runners, group_col='going')
     df_runners = compute_horse_feats(df_runners, group_col='distance')
+    df_runners = compute_horse_feats(df_runners, group_col='quarter')
     df_runners = compute_owner_feats(df_runners, owner='jockey')
     df_runners = compute_owner_feats(df_runners, owner='trainer')
+    df_runners = compute_owner_feats(df_runners, owner='jockey', group_col='distance')
+    df_runners = compute_std_ranking_to_1(df_runners, col='result')
+    df_runners = compute_combinaison_feats(df_runners, owner_1 = 'horse', owner_2 = 'jockey', hippo = 'venue')
+    df_runners = compute_combinaison_feats(df_runners, owner_1 = 'horse', owner_2 = 'trainer', hippo = 'venue')
+    df_runners = compute_owner_gain_feats(df_runners, owner='horse')
+    df_runners = compute_owner_gain_feats(df_runners, owner='trainer')
+    df_runners = compute_owner_gain_feats(df_runners, owner='jockey')
 
     na_cols = df_runners.filter(regex="ratio|runs|wins|places").columns.tolist()
     df_runners = fillna(df_runners, na_cols)  
