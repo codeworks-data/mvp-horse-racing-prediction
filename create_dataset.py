@@ -2,7 +2,15 @@ import os
 import pandas as pd
 from config import Config
 
-def create_dataset(df, date_test):
+
+def sort_result(element):
+    if element[0] == 'result':
+        return 100 + element[1] # to make sure results are put near the end
+    else:
+        return element[1] 
+
+
+def create_train_test(df, date_test):
     train_race_ids = df[df.date < date_test]['race_id'].unique().tolist()
     train_data = df[df.race_id.isin(train_race_ids)]
     test_data = df[~(df.race_id.isin(train_race_ids))]
@@ -14,8 +22,21 @@ if __name__=='__main__':
     config = Config()
     df_runners = pd.read_csv(os.path.join(config.FILE_PATH, config.output_file_name))
     df_runners[config.won_label] = df_runners[config.won_label].fillna(0).astype(int)
-    train_data, test_data = create_dataset(df_runners, config.date_test)
 
-    train_data.to_csv(os.path.join(config.FILE_PATH, config.train_file_name), index=False)
-    test_data.to_csv(os.path.join(config.FILE_PATH, config.test_file_name), index=False)
+    INDEX = config.index_pivot_table
+    FEATURES = config.list_feats
+    PIVOT_COLUMN = config.pivot_column
+
+    df_runners_pivot = pd.pivot_table(df_runners, index=INDEX, columns=PIVOT_COLUMN, values=FEATURES).reset_index()
+
+    rearranged_columns = sorted(list(df_runners_pivot.columns.values)[len(INDEX):], key=sort_result)
+    rearranged_columns = list(df_runners_pivot.columns.values)[:len(INDEX)] + rearranged_columns
+
+    df_runners_pivot = df_runners_pivot[rearranged_columns].fillna(0)
+
+    if config.pivot:
+        train_data, test_data = create_train_test(df_runners_pivot, config.date_test)
+
+        train_data.to_csv(os.path.join(config.FILE_PATH, config.train_file_name), index=False)
+        test_data.to_csv(os.path.join(config.FILE_PATH, config.test_file_name), index=False)
 
