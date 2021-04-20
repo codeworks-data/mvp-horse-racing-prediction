@@ -37,6 +37,6 @@ if __name__=='__main__':
     if config.pivot:
         train_data, test_data = create_train_test(df_runners_pivot, config.date_test)
 
-        train_data.to_csv(os.path.join(config.FILE_PATH, config.train_file_name), index=False)
-        test_data.to_csv(os.path.join(config.FILE_PATH, config.test_file_name), index=False)
+        train_data.to_hdf(os.path.join(config.FILE_PATH, config.train_file_name), key='features')
+        test_data.to_hdf(os.path.join(config.FILE_PATH, config.test_file_name), key='features')
 
