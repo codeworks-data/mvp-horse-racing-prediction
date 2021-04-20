@@ -9,18 +9,7 @@ class Config:
 
         self.won_label = "won"
         self.place_label = "place"
-        self.model_file_name = "baseline_model.joblib"
         self.date_test = "2005-01-01"
         self.pivot = True,
         self.pivot_column = ('horse_no')
-        self.index_pivot_table = ('race_id', 'date', 'venue', 'config', 'surface', 'distance', 'going', 'horse_ratings', 'prize', 'race_class')
-        self.list_feats = ['result',
-                        'horse_age',
-                        'horse_country',
-                        'horse_type',
-                        'horse_rating',
-                        'horse_gear',
-                        'declared_weight',
-                        'actual_weight',
-                        'draw',
-                        'win_odds']
+        self.index_pivot_table = ('race_id', 'date', 'race_no', 'venue', 'config', 'surface', 'distance', 'going', 'horse_ratings', 'prize', 'race_class')

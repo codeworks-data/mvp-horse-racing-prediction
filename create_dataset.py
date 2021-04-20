@@ -24,8 +24,9 @@ if __name__=='__main__':
     df_runners[config.won_label] = df_runners[config.won_label].fillna(0).astype(int)
 
     INDEX = config.index_pivot_table
-    FEATURES = config.list_feats
     PIVOT_COLUMN = config.pivot_column
+    FEATURES = df_runners.columns[len(INDEX):].tolist()
+
 
     df_runners_pivot = pd.pivot_table(df_runners, index=INDEX, columns=PIVOT_COLUMN, values=FEATURES).reset_index()
 
