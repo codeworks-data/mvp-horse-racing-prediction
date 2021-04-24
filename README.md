@@ -1,17 +1,15 @@
 # Hong Kong Horse Racing Prediction
-===
 
 The aim of this project is to predict the outcome of horse racing using machine learning algorithms.
 
 ## Dataset
-The dataset comes from [Kaggle](https://www.kaggle.com/gdaley/hkracing) and covers races in HK from **1997 to 2005**. 
-The data consists of **6349** races with 4,405 runners.
+The dataset comes from [Kaggle](https://www.kaggle.com/gdaley/hkracing) and covers races in HK from **1997 to 2005**. <br>
+The data consists of **6349** races with 4,405 runners. <br>
 The 5878 races run before January 2005 are used to develop the forecasting models whereas the remaining 471 races run after January 2005 are preserved to conduct out-of-sample testing.
 
 ## GCP Training Part
 
 ## 1. Create a new GCP Project
-===
 
 * Get the billing accounts list
 
