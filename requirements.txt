@@ -1,0 +1,6 @@
+tables==3.6.1
+numexpr==2.7.3
+pandas==1.2.4
+xgboost==1.4.1
+bayesian-optimization==1.2.0
+
