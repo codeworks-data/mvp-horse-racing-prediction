@@ -12,14 +12,14 @@ import joblib
 
 def how_many_do_we_win(y_pred_value,y_real_value,df):
     """return how many do we win and the mean values of the win odds"""
-    win = 0
+    win_amount = 0
     List_odds = []
     for i in range(len(y_pred_value)):
         if y_pred_value[i] == y_real_value[i]:
             val = df.win_odds[:][y_pred_value[i]+1].tolist()[i] #+1 because we need horse_no and not indices from a list
             win = win + val
             List_odds.append(val)
-    return win, np.mean(List_odds)
+    return win_amount, np.mean(List_odds)
 
 
 
