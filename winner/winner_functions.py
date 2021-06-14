@@ -11,6 +11,7 @@ from lightgbm import plot_importance
 from lightgbm import LGBMClassifier
 
 
+### COMMON FUNCTION BETWEEN WINNER AND PLACED
 
 def how_many_do_we_win(y_pred_value,y_real_value,df):
     """
@@ -101,6 +102,12 @@ def create_x_and_y(df):
     return X,y
 
 
+
+
+
+#####
+
+
 def prepare_and_split_data(X_train_init,X_test_init):
     """
     this function do the data prepartion then split and give us the good datasets according to the months we are trainning
@@ -140,7 +147,6 @@ def prepare_and_split_data(X_train_init,X_test_init):
     return X_train, y_train, X_test, y_test, y_train_value, y_test_value, X_test_init
 
 
-
 def multi_indexes_to_single(df):
     """
     Convert a multi indexes pandas dataframe to a single indexes pandas dataframe
@@ -166,7 +172,9 @@ def metrics_perso(y_pred,y_test_value,X_TEST):
 
 
 def train_dl(num_neutron,batch_size,epoch,X_train,y_train,X_test,y_test):
-    "This function will allow us to train our deep learning model"
+    """
+    This function will allow us to train our deep learning model
+    """
     
     import keras as K
     import numpy as np
