@@ -1,5 +1,6 @@
 class Config:
     def __init__(self):
+        
         self.FILE_PATH = "data"
         self.runs_file_name = "runs.csv"
         self.races_file_name = "races.csv"
@@ -12,4 +13,6 @@ class Config:
         self.date_test = "2005-01-01"
         self.pivot = True,
         self.pivot_column = ('horse_no')
-        self.index_pivot_table = ('race_id', 'date', 'race_no', 'venue', 'config', 'surface', 'distance', 'going', 'horse_ratings', 'prize', 'race_class')
+        
+        #features corresponding to the run only
+        self.index_pivot_table = ('race_id', 'date', 'race_no', 'venue', 'config', 'surface', 'distance', 'going', 'horse_ratings', 'prize', 'race_class') 
