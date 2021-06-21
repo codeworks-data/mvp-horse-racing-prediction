@@ -18,7 +18,10 @@ We have an article explainning our journey through this process. You can find a 
 ### List of all folder and files
 
 * requirement : it's a list of requirements needed to run this project
+* baseline_models is a notebook containing informations for part 1 on baseline models
+* quick_eda_horse_racing is notebook with a quick eda on our dataset
 * create_dataset and config are both used to split our inital data into train and test sets respecting the date of runs
+* extract_features is used to perform feature engineering
 * data is a folder containing all data once they are split by the create_dataset script
 * winner is a folder containing all notebook and ml models to bet on winner horses
 * placed is a folder containing all notebook and ml models to bet on placed horses
