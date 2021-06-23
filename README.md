@@ -2,52 +2,55 @@
 
 The aim of this project is to predict the outcome of horse racing using machine learning algorithms.
 
+![horse_racing](https://user-images.githubusercontent.com/71772293/123072394-ca65c100-d415-11eb-9660-24d726f7541d.jpeg)
+
+From RaceBets
+
+
+
 ## Dataset
 The dataset comes from [Kaggle](https://www.kaggle.com/gdaley/hkracing) and covers races in HK from **1997 to 2005**. <br>
-The data consists of **6349** races with 4,405 runners. <br>
-The 5878 races run before January 2005 are used to develop the forecasting models whereas the remaining 471 races run after January 2005 are preserved to conduct out-of-sample testing.
+The data consists of **6,349** races with 4,405 runners. <br>
+The 5,878 races ran before January 2005 are used to develop the forecasting models whereas the remaining 471 races ran after January 2005 are preserved to conduct out-of-sample testing.
 
 ## GCP
 
 The aim of this folder is to show all notebooks and algorithms we used to predict either winner and placed horses.
 
-We have an article explainning our journey through this process. You can find a link below:
+We have an article explaining our journey through this process. You can find a link below:
 * **Part 1**: https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-1-44ed7fca869e
 * **Part 2**: .......
 
 ### List of all folder and files
 
-* **requirement** : it's a list of requirements needed to run this project
+* **requirement** is a list of requirements needed to run this project
 * **baseline_models** is a notebook containing informations for part 1 on baseline models
-* **quick_eda_horse_racing** is notebook with a quick eda on our dataset
-* **create_dataset** and config are both used to split our inital data into train and test sets respecting the date of runs
+* **quick_eda_horse_racing** is a notebook with a quick EDA on our dataset
+* **create_dataset** and **config** are both used to split our inital data into train and test sets depending on the date of races
 * **extract_features** is used to perform feature engineering
 * **data** is a folder containing all data once they are split by the create_dataset script
-* **winner** is a folder containing all notebook and ml models to bet on winner horses
-* **placed** is a folder containing all notebook and ml models to bet on placed horses
+* **winner** is a folder containing all notebook and ML models to bet on winner horses
+* **placed** is a folder containing all notebook and ML models to bet on placed horses
 
 ### winner folder
 
 Let's have a look about the winner files:
 
-* **winner_01_lgbm_optim** : notebook to run the hyperoptimization for lgbm
-* **winner_02_train** : notebook which run all trainning process either for lgbm and deep learning and saved results
-* **winner_03_show_result** : notebook which help us to verify our information and go deeper about our prediction for a specific month
-* **winner_04_all_results** : notebook which consolidated all month with and ensemble model and show final results
-* **winner_functions.py** : this python file have all needed function to run those 4 previous notebooks
-* **model** folder contains all saved models the winner_02_train.
-* **result_hyperopt.csv** : we saved here our optimizations steps
+* **winner_01_lgbm_optim** is a notebook which runs the hyperoptimization for LGBM
+* **winner_02_train** is a notebook which runs all training processes either for LGBM and deep learning then saves results
+* **winner_03_show_result** is a notebook which helps us to verify our informations and go deeper about our predictions for a specific month
+* **winner_04_all_results** is a notebook which consolidates all months with an ensemble model and shows final results
+* **winner_functions.py** is a python file which has all the required functions to run those 4 previous notebooks
+* **model** is a folder that contains all saved models from winner_02_train
+* **result_hyperopt.csv** is a csv file with all our optimizations steps
 
 
 ### placed folder
 
 Let's have a look about the placed files:
 
-
-* **placed_01_train** : notebook which run all trainning process for deep learning and saved results
-* **placed_02_show_result** : notebook which help us to verify our information and go deeper about our prediction for a specific month
-* **placed_03_consolidated** : notebook which consolidated all month with and ensemble model and show final results
-* **placed_functions.py** : this python file have all needed function to run those 4 previous notebooks
-* **model** folder contains all saved models the placed_01_train and lgbm models from the winner_folder (we kept the same)
-
-
+* **placed_01_train** is a notebook which runs all training processes for deep learning then saves results
+* **placed_02_show_result** is a notebook which helps us to verify our informations and go deeper about our predictions for a specific month
+* **placed_03_consolidated** is a notebook which consolidates all months with an ensemble model and shows final results
+* **placed_functions.py** is a python file which has all the required functions to run those 4 previous notebooks
+* **model** is a folder that contains all saved models from placed_01_train and LGBM models from winner_folder
