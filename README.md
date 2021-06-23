@@ -19,7 +19,7 @@ The aim of this folder is to show all notebooks and algorithms we used to predic
 
 We have an article explaining our journey through this process. You can find a link below:
 * **Part 1**: https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-1-44ed7fca869e
-* **Part 2**: .......
+* **Part 2**: https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-2-e9f5eb9a92e9
 
 ### List of all folder and files
 
