@@ -13,24 +13,19 @@ The dataset comes from [Kaggle](https://www.kaggle.com/gdaley/hkracing) and cove
 The data consists of **6,349** races with 4,405 runners. <br>
 The 5,878 races ran before January 2005 are used to develop the forecasting models whereas the remaining 471 races ran after January 2005 are preserved to conduct out-of-sample testing.
 
-## GCP
-
-The aim of this folder is to show all notebooks and algorithms we used to predict either winner and placed horses.
-
 We have an article explaining our journey through this process. You can find a link below:
-* **Part 1**: https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-1-44ed7fca869e
-* **Part 2**: https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-2-e9f5eb9a92e9
+* **[Horse Racing Prediction Part 1](https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-1-44ed7fca869e)**
+* **[Horse Racing Prediction Part 2](https://medium.com/codeworksparis/horse-racing-prediction-a-machine-learning-approach-part-2-e9f5eb9a92e9)** 
 
 ### List of all folder and files
 
-* **requirement** is a list of requirements needed to run this project
-* **baseline_models** is a notebook containing informations for part 1 on baseline models
-* **quick_eda_horse_racing** is a notebook with a quick EDA on our dataset
-* **create_dataset** and **config** are both used to split our inital data into train and test sets depending on the date of races
-* **extract_features** is used to perform feature engineering
-* **data** is a folder containing all data once they are split by the create_dataset script
-* **winner** is a folder containing all notebook and ML models to bet on winner horses
-* **placed** is a folder containing all notebook and ML models to bet on placed horses
+* **requirements.txt** is a list of requirements needed to run this project
+* **baseline_models.ipynb** is a notebook containing informations for part 1 on baseline models
+* **quick_eda_horse_racing.ipynb** is a notebook with a quick EDA on our dataset
+* **create_dataset.py** and **config** are both used to split our inital data into train and test sets depending on the date of races
+* **extract_features.py** is used to perform feature engineering
+* **winner/** is a folder containing all notebooks and ML models to bet on winner horses
+* **placed/** is a folder containing all notebooks and ML models to bet on placed horses
 
 ### winner folder
 
