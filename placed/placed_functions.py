@@ -1,18 +1,14 @@
+import random
+import keras
+import joblib
 import pandas as pd
 import numpy as np
 import tensorflow as tf
 import sklearn.preprocessing as preprocessing
-import sklearn.model_selection as model_selection
 import matplotlib.pyplot as plt
-from matplotlib import pyplot
-import keras as K
-import keras
-import joblib
-from lightgbm import plot_importance
-from lightgbm import LGBMClassifier
 
-
-### COMMON FUNCTION BETWEEN WINNER AND PLACED
+np.random.seed(1)
+random.seed(2)
 
 def how_many_do_we_win(y_pred_value,y_real_value,df):
     """
@@ -27,7 +23,6 @@ def how_many_do_we_win(y_pred_value,y_real_value,df):
             List_odds.append(val)
     return win_amount, np.mean(List_odds)
 
-    
 def draw_evolution(df):
     """
     Draw the evolution according to the date
@@ -37,8 +32,7 @@ def draw_evolution(df):
     plt.xlabel('date', fontsize=16)
     plt.xticks(rotation=90)
     plt.plot(df.date, df.cumul_100)
-  
-    
+
 def draw_evolution_race(df,model_name):
     """
     Draw the evolution according to the number of races
@@ -49,8 +43,7 @@ def draw_evolution_race(df,model_name):
     plt.xticks(rotation=0,fontsize=15)
     plt.yticks(rotation=0,fontsize=15)
     plt.plot(df.index, df.cumul_100)    
-    
-    
+
 def create_X_TEST(df_init):
     """
     return a simplified dataframe used to retrieve win_odds and place_odds to calcul profit
@@ -59,74 +52,47 @@ def create_X_TEST(df_init):
     features = ['draw','place_odds','win_odds','result']
     return df_init[INDEX + features]
 
-
-
 def create_x_and_y(df):
     """
     function which return 2 dataframe for the features and labels used for trainning and testing
     """
-    
     data = df
-    
-    #all first columns will be use for X
     X = data[data.columns[:-14]] 
     ss = preprocessing.StandardScaler()
     X = pd.DataFrame(ss.fit_transform(X),columns = X.columns)
-
-    #all 14 last columns will be used for y
-    #we use 1 if the horse win the race and 0 otherwize
     y = data[data.columns[-14:]].applymap(lambda x: 1.0 if x == 1 else 0.0) 
 
-    return X,y
-
-
-
-#####
+    return X, y
 
 def prepare_and_split_data_placed(X_train_init,X_test_init):
     """
     this function do the data prepartion then split and give us the good datasets according to the months we are trainning
     """
-    
-    #remove non available odds
     X_train = remove_place_odds_non_available(X_train_init)
     X_test = remove_place_odds_non_available(X_test_init)
-    
-    
-    #create a new columns with how many runners we need to bet on (2 or 3 horses)
+
     X_train = hm_runners(X_train)
     X_test = hm_runners(X_test)
-    
-    #create the label
+
     X_train = create_label(X_train)
     X_test = create_label(X_test)
 
-    #dropping some columns
-    Drop = ['race_id','race_no','hm_runners','date','won','place']
-    X_tr = X_train.drop(Drop,axis=1,level=0)
-    X_te = X_test.drop(Drop,axis=1,level=0)
+    cols_to_drop = ['race_id','race_no','hm_runners','date','won','place']
+    X_tr = X_train.drop(cols_to_drop,axis=1,level=0)
+    X_te = X_test.drop(cols_to_drop,axis=1,level=0)
 
-    #how many features
     L = []
     for col in X_tr.columns.tolist():
         L.append(col[0])
 
-    #print(f"We only keep {len(set(L))} columns in totals")
-
-    #We slipt each dataset between features and labels
     X_train, y_train = create_x_and_y(X_tr)
     print("shape of the x_train: ", X_train.shape)
     print("shape of the y_train: ", y_train.shape)
     
-   
-    
     if X_te.shape[0] == 0 :
-        print("Error, we can't work with this set")
         print("They are no values available")
         return False
-        
     else :
-        
         X_test, y_test = create_x_and_y(X_te)
         print("shape of the X_test: ", X_test.shape)
         print("shape of the y_test: ", y_test.shape)
@@ -141,7 +107,6 @@ def prepare_and_split_data_placed(X_train_init,X_test_init):
 
     return X_train, y_train, X_test, y_test, y_train_value, y_test_value, X_test_init
 
-
 def remove_place_odds_non_available(df):
     """
     This function return a df with only race where place odds are available for all horses
@@ -151,7 +116,6 @@ def remove_place_odds_non_available(df):
     df.drop('test',axis=1, level = 0, inplace=True)
     return df
 
-
 def hm_runners(df):
     """
     return a df with a new columns with the number of placed horses needed
@@ -159,8 +123,6 @@ def hm_runners(df):
     nb_of_vacant_position = (df['draw'] == 0).astype(int).sum(axis=1)
     df.insert(loc = 0, column = 'hm_runners', value = 14 - nb_of_vacant_position)
     return df
-
-
 
 def to_3_value(pred,real,df,match_race_id_from_indices):
     """
@@ -196,7 +158,6 @@ def get_place_odds(df,race_id,horse_no):
     A = df[df['race_id']==race_id]['place_odds'].iloc[0][horse_no-1]
     # we could put a condition if the value does not exist and return 1 by default but we prefer discard bets when this happens
     return A 
-
 
 def compute_df_placed(pred,real,df,match_id):
     """
@@ -272,8 +233,6 @@ def compute_gain(y_test,y_pred,df,match_id):
 
     return revenue, tot, good_guesses, np.mean(L)
 
-
-
 def compute_df_placed_xgb(pred,real,df,match_id):
     """
     return a df with information to draw the evolution of our investement
@@ -289,21 +248,13 @@ def compute_df_placed_xgb(pred,real,df,match_id):
     Z['cumul_100'] = Z['cumul'] + 100
     return Z
 
-
-
-
-
 def change_shape(pred_bad_shape):
     """
     change the shape of the prediction
     """
-
     A = [pred_bad_shape[i][:,1] for i in range(14)]
 
-    pred_good_shape = [np.array([A[i][j] for i in range(14)]) for j in range(len(A[0]))]
-
-    return pred_good_shape
-
+    return [np.array([A[i][j] for i in range(14)]) for j in range(len(A[0]))]
 
 def mean_place_odds(X_test_init):
     """
@@ -327,21 +278,10 @@ def ensemble_model_placed(pred_dl,pred_lgbm,coef_dl):
     new_pred = coef_dl*pred_dl + (1-coef_dl)*pred_lgbm
     return new_pred
 
-
-
 def train_dl(num_neutron,batch_size,epoch,X_train,y_train,X_test,y_test):
     """
     This function will allow us to train our deep learning model
     """
-    import keras as K
-    import numpy as np
-    np.random.seed(1) # NumPy
-    import random
-    random.seed(2) # Python
-    from tensorflow import random
-    random.set_seed(3)
-
-
 
     model = tf.keras.Sequential([
         tf.keras.layers.Dense(num_neutron, activation='relu', input_shape=(1618,)),
@@ -363,89 +303,46 @@ def train_dl(num_neutron,batch_size,epoch,X_train,y_train,X_test,y_test):
     print("Done.")
     return model
 
-
-
-#### COMPUTE ALL PROFIT 
-
-
 def compute_profil(month, X_train, y_train, X_test, y_test, y_train_value, y_test_value, X_test_init):
-    
-    
-    
     """
     Compute profit for all models (Deep Learning, LGBM, Ensemble model)
     """
-        
-        
-    # Set some variables for compute the profit 
-    
     
     X_TEST = create_X_TEST(X_test_init)
     
     match_race_id_from_indices = X_test_init.race_id.to_list()
-    
-    
-    # DEEP LEARNING
-    
-    
+
     model = keras.models.load_model(f'model/placed_DL_{month}.h5')
     y_pred_dl = model.predict(X_test)
-    
-    # Compute the deep learning profit
-    
-    #--  
+
     revenue,hm_bet,good_guesses,mean_sucess_pred =  compute_gain(y_test,y_pred_dl,X_TEST,match_race_id_from_indices)
  
     perc_dl = round((good_guesses / hm_bet) * 100,2)
 
     profit_DL = revenue-hm_bet 
-    #--
-    
-    
-    ###############
-    
-    # LGBM
 
-    
     filename = f'model/winner_lgbm_{month}'
 
     #load saved model
     lgbm = joblib.load(filename)
     
     y_pred_lgbm = lgbm.predict_proba(X_test)
-    
-    
-    # Compute the lgbm profit
-    
-    #--      
+
     revenue,hm_bet,good_guesses,mean_sucess_pred =  compute_gain(y_test,y_pred_lgbm,X_TEST,match_race_id_from_indices)
  
     perc_lgbm = round((good_guesses / hm_bet) * 100,2)
 
-    profit_lgbm = revenue-hm_bet       
-    #-- 
-
-    
-    ###############
-    
-    #Ensemble Model
-    
-    
+    profit_lgbm = revenue-hm_bet
     
     pred_proba_dl = model.predict_proba(X_test)
     pred_proba_lgbm = lgbm.predict_proba(X_test)
     
     pred_classes = ensemble_model_placed(pred_proba_dl,pred_proba_lgbm,0.3)
-    
-    # Compute the ensemble profit
-    
-    #--   
+
     revenue,hm_bet,good_guesses,mean_sucess_pred =  compute_gain(y_test,pred_classes,X_TEST,match_race_id_from_indices)
  
     perc_conso = round((good_guesses / hm_bet) * 100,2)
 
     profil_conso = revenue-hm_bet   
-    #-- 
-
 
     return profit_DL, profit_lgbm, pred_proba_dl, pred_proba_lgbm, profil_conso,perc_dl,perc_lgbm,perc_conso, hm_bet
